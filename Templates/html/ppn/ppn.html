@@ -1,0 +1,79 @@
+{% comment %} {% extends "base.html" %}
+
+
+{% block header %}{% endblock %}
+
+{% block content %}
+    
+{% endblock %}
+
+{% block script %}{% endblock %} {% endcomment %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+</head>
+<body>
+    <h1>PPN Calculator</h1>
+    <form id="calculator-form">
+        {% csrf_token %}
+        <div>
+            {{ form.price.label_tag }}
+            {% load humanize %}
+            {{ form.price|intcomma }}
+        </div>
+        <div>
+            {{ form.tax.label_tag }}
+            {{ form.tax }}
+        </div>
+        <div>
+            {{ form.total_tax.label_tag }}
+            {{ form.total_tax }}
+        </div>
+        <div>
+            {{ form.discount.label_tag }}
+            {{ form.discount }}
+        </div>
+        <div>
+            {{ form.total_discount.label_tag }}
+            {{ form.total_discount }}
+        </div>
+        <div>
+            {{ form.result.label }}
+            {{ form.result }}
+        </div>
+    </form>
+
+    {% comment %}  CDN {% endcomment %}
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.10/jquery.mask.js"></script>
+
+    {% comment %} Calculate function {% endcomment %}
+    <script>
+        function calculateTotal() {
+            var price = parseFloat(document.getElementById('price').value);
+            console.log(price);
+            var tax = parseFloat(document.getElementById('tax').value);
+            var discount = parseFloat(document.getElementById('disc').value);
+
+            var total_tax = price * 0.11;
+            var total_discount = price * (discount / 100);
+            var final_total = price + total_tax - total_discount;
+
+            var formattedTotal = final_total.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+            var formattedDiscount = total_discount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+
+            document.getElementById('disc-price').value = formattedDiscount;
+            document.getElementById('result').value = formattedTotal;
+        }
+
+        document.getElementById('price').addEventListener('input', calculateTotal);
+        document.getElementById('disc').addEventListener('input', calculateTotal);
+
+        // Initial calculation when page loads
+        calculateTotal();
+    </script>
+</body>
+</html>
